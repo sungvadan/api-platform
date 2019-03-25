@@ -1,0 +1,13 @@
+App\Entity\Book:
+    book_{1..10}:
+        isbn: <isbn13()>
+        title: <sentence()>
+        author: <name()>
+        publicationDate: <dateTime()>
+App\Entity\Review:
+    review_{1..20}:
+        rating: <numberBetween(0,5)>
+        body: <text()>
+        author: <name()>
+        publicationDate: <dateTime()>
+        book: '@book_*'
