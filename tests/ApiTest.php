@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ApiTest extends WebTestCase
 {
-    use RefreshDatabaseTrait;
 
     /**
      * @var Client
@@ -25,6 +24,7 @@ class ApiTest extends WebTestCase
     }
     protected function request(string $method, string $uri, $content = null, array $headers = []): Response
     {
+        $uri = "/api$uri";
         $server = ['CONTENT_TYPE' => 'application/ld+json', 'HTTP_ACCEPT' => 'application/ld+json'];
         foreach ($headers as $key => $value) {
             if (strtolower($key) === 'content-type') {
