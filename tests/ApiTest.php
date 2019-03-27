@@ -61,4 +61,28 @@ class ApiTest extends WebTestCase
     }
 
 
+    public function testWillThowAnErrorWhenDataInValid()
+    {
+        $response = $this->request('POST', '/books',[
+          "isbn"=> "123",
+          "title"=> "",
+          "author"=> "string",
+          "publicationDate"=> "2019-03-27"
+        ]);
+        $json = json_decode($response->getContent(), true);
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals('application/ld+json; charset=utf-8', $response->headers->get('Content-Type'));
+
+        $this->assertEquals('An error occurred', $json['hydra:title']);
+        $this->assertArrayHasKey('violations', $json);
+        $this->assertCount(2, $json['violations']);
+
+        $this->assertArrayHasKey('propertyPath', $json['violations'][0]);
+        $this->assertEquals('isbn', $json['violations'][0]['propertyPath']);
+
+        $this->assertArrayHasKey('propertyPath', $json['violations'][1]);
+        $this->assertEquals('title', $json['violations'][1]['propertyPath']);
+    }
+
+
 }
