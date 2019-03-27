@@ -1,6 +1,11 @@
 App\Entity\Book:
-    book_{1..10}:
+    book_{1..9}:
         isbn: <isbn13()>
+        title: <sentence()>
+        author: <name()>
+        publicationDate: <dateTime()>
+    book_10:
+        isbn: 9790456981541
         title: <sentence()>
         author: <name()>
         publicationDate: <dateTime()>

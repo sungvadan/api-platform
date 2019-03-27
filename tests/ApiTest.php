@@ -2,6 +2,7 @@
 
 namespace App\Tests;
 
+use App\Entity\Book;
 use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -25,7 +26,9 @@ class ApiTest extends WebTestCase
     }
     protected function request(string $method, string $uri, $content = null, array $headers = []): Response
     {
-        $uri = "/api$uri";
+        if (!preg_match("/(?=api)/", $uri)) {
+            $uri = "/api$uri";
+        }
         $server = ['CONTENT_TYPE' => 'application/ld+json', 'HTTP_ACCEPT' => 'application/ld+json'];
         foreach ($headers as $key => $value) {
             if (strtolower($key) === 'content-type') {
@@ -103,6 +106,18 @@ class ApiTest extends WebTestCase
         $this->assertEquals('9781782164104', $json['isbn']);
     }
 
+    public function testDeleteBook()
+    {
+        $response = $this->request('DELETE', $this->findOneIriBy(Book::class, ['isbn' => '9790456981541']));
+        $this->assertEquals(204, $response->getStatusCode());
+    }
 
+
+    protected function findOneIriBy(string $resourceClass, array $criteria): string
+    {
+        $resource = static::$container->get('doctrine')->getRepository($resourceClass)->findOneBy($criteria);
+
+        return static::$container->get('api_platform.iri_converter')->getIriFromitem($resource);
+    }
 
 }
