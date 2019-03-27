@@ -5,6 +5,7 @@ namespace App\Tests;
 use Hautelook\AliceBundle\PhpUnit\RefreshDatabaseTrait;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Console\Application;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -83,6 +84,25 @@ class ApiTest extends WebTestCase
         $this->assertArrayHasKey('propertyPath', $json['violations'][1]);
         $this->assertEquals('title', $json['violations'][1]['propertyPath']);
     }
+
+    public function testCreatingBook()
+    {
+        $data = [
+            'isbn' => '9781782164104',
+            'title' => 'Persistence in PHP with Doctrine ORM',
+            'description' => 'This book is designed for PHP developers and architects who want to modernize their skills through better understanding of Persistence and ORM. You\'ll learn through explanations and code samples, all tied to the full development of a web application.',
+            'author' => 'Kévin Dunglas',
+            'publicationDate' => '2013-12-01',
+        ];
+        $response = $this->request('POST', '/books', $data);
+        $json = json_decode($response->getContent(), true);
+        $this->assertEquals('application/ld+json; charset=utf-8', $response->headers->get('Content-Type'));
+
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertArrayHasKey('isbn', $json);
+        $this->assertEquals('9781782164104', $json['isbn']);
+    }
+
 
 
 }
